@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`HeaderComponent should match the snapshot 1`] = `
+<div
+  id="root1"
+>
+  <header>
+    <img
+      alt="logo"
+      src="images/devsu_logo.jpg"
+    />
+  </header>
+</div>
+`;
