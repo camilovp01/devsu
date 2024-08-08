@@ -24,6 +24,9 @@
         "tsConfig": "<rootDir>/tsconfig.spec.json",
         "stringifyContentPathRegex": "\\.html$"
       }
+    },
+    "moduleNameMapper": {
+      "^@productModules/(.*)$": "<rootDir>/src/app/modules/products/$1"
     }
   },
   "private": true,

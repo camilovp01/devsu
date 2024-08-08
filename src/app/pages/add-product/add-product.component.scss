@@ -1,0 +1,86 @@
+@import "../../../styles/mixins.scss";
+
+.registration {
+  display: flex;
+  justify-content: center;
+
+  &__container {
+    width: 100%;
+    @include medium {
+      max-width: 800px;
+    }
+
+    &-field {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      @include medium {
+        display: flex;
+        flex-direction: row;
+        gap: 24px;
+      }
+    }
+  }
+
+  &__title {
+    text-align: center;
+  }
+
+  &__divider {
+    height: 2px;
+    background-color: #dee2e6;
+    opacity: 0.5;
+    margin: 24px 0 16px 0;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    @include medium {
+      width: 50%;
+    }
+  }
+
+  &__label {
+    font-weight: 600;
+    font-size: 0.8rem;
+  }
+
+  &__input {
+    border: 0.5px solid #dee2e6;
+    padding: 12px 8px;
+    &:disabled {
+      background-color: #dfdfdf;
+      cursor: not-allowed;
+    }
+    &--rounded {
+      border-radius: 8px;
+    }
+  }
+
+  &__error-message {
+    color: #f54e5e;
+    font-size: 0.7rem;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 40px;
+  }
+
+  &__button {
+    padding: 16px;
+  }
+}
+
+.ng-invalid:not(form).ng-touched {
+  border: 1px solid #f54e5e;
+}

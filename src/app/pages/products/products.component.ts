@@ -2,10 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { GetProducts } from '@productModules/application/GetProducts';
+import { Product } from '@productModules/domain/models/product.model';
 import { debounceTime, finalize } from 'rxjs';
 import { PaginatorComponent } from '../../components/paginator/paginator.component';
-import { Product } from '../../models/product.model';
-import { ProductService } from '../../services/product.service';
 
 @Component({
   selector: 'app-products',
@@ -26,36 +26,23 @@ export class ProductsComponent implements OnInit {
   loading: boolean = false;
   products: Product[] = [];
   selectedProduct: any = null;
-  productsFiltered: Product[] = [];
   showMenu: boolean = false;
   itemsPerPage = 5;
   paginatedProducts: Product[] = [];
   currentPage = 1;
 
-  constructor(private productService: ProductService, private router: Router) {}
+  constructor(private getProducts: GetProducts, private router: Router) {}
 
   ngOnInit(): void {
     this.loading = true;
-    this.productService
-      .getProducts()
+    this.getProducts
+      .execute()
       .pipe(finalize(() => (this.loading = false)))
       .subscribe((products) => {
         this.products = products;
-        this.productsFiltered = this.products;
         this.paginate(this.currentPage);
       });
-    this.search.valueChanges.pipe(debounceTime(300)).subscribe((search) => {
-      this.productsFiltered = this.products.filter((product) => {
-        let matchesSearch = true;
-
-        const searchStr = search.toString().toLowerCase();
-        matchesSearch = Object.values(product).some((value) =>
-          value.toString().toLowerCase().includes(searchStr)
-        );
-
-        return matchesSearch;
-      });
-    });
+    this.searchProduct();
   }
 
   editProduct(product: Product) {
@@ -85,6 +72,20 @@ export class ProductsComponent implements OnInit {
   paginate(page: number) {
     const start = (page - 1) * this.itemsPerPage;
     const end = start + this.itemsPerPage;
-    this.paginatedProducts = this.productsFiltered.slice(start, end);
+    this.paginatedProducts = this.products.slice(start, end);
+  }
+
+  private searchProduct() {
+    this.search.valueChanges.pipe(debounceTime(300)).subscribe((search) => {
+      this.paginatedProducts = this.products.filter((product) => {
+        let matchesSearch = true;
+        const searchStr = search.toString().toLowerCase();
+        matchesSearch = Object.values(product).some((value) =>
+          value.toString().toLowerCase().includes(searchStr)
+        );
+
+        return matchesSearch;
+      });
+    });
   }
 }

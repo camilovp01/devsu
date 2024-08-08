@@ -1,22 +1,27 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import {
+  AbstractControl,
+  AsyncValidatorFn,
   FormBuilder,
   FormControl,
   FormGroup,
   ReactiveFormsModule,
+  ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
-import { filter, finalize } from 'rxjs';
-import { Product } from '../../models/product.model';
-import { ProductService } from '../../services/product.service';
+import { Router, RouterModule } from '@angular/router';
+import { CreateProduct } from '@productModules/application/CreateProduct';
+import { EditProduct } from '@productModules/application/EditProduct';
+import { ValidateIfExistProduct } from '@productModules/application/ValidateIfExistProduct';
+import { Product } from '@productModules/domain/models/product.model';
+import { finalize, map, Observable } from 'rxjs';
 import { currentDateValidator } from '../../validators/current-date.validator';
 
 @Component({
   selector: 'app-add-product',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './add-product.component.html',
   styleUrl: './add-product.component.scss',
 })
@@ -27,7 +32,9 @@ export class AddProductComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private productService: ProductService,
+    private createProduct: CreateProduct,
+    private editProduct: EditProduct,
+    private validateIfExistProduct: ValidateIfExistProduct,
     private router: Router
   ) {
     const productToEdit = this.router.getCurrentNavigation()?.extras?.state;
@@ -53,7 +60,7 @@ export class AddProductComponent implements OnInit {
           Validators.minLength(3),
           Validators.maxLength(10),
         ],
-        asyncValidators: [this.productService.validateUniqueProductId()],
+        asyncValidators: [this.validateIdProduct()],
         updateOn: 'blur',
       }),
       name: new FormControl(null, [
@@ -92,11 +99,10 @@ export class AddProductComponent implements OnInit {
       this.form.markAllAsTouched();
       return;
     }
-
     if (this.product) {
-      this.editProduct();
+      this.edit();
     } else {
-      this.createProduct();
+      this.create();
     }
   }
 
@@ -131,22 +137,27 @@ export class AddProductComponent implements OnInit {
     return nextYear.toISOString().substring(0, 10);
   }
 
-  private createProduct() {
+  private create() {
     this.loading = true;
-    this.productService
-      .addProduct(this.form.getRawValue())
-      .pipe(
-        finalize(() => (this.loading = false)),
-        filter((response) => !!response?.status && response.status === 200)
-      )
+    this.createProduct
+      .execute(this.form.getRawValue())
+      .pipe(finalize(() => (this.loading = false)))
       .subscribe(() => this.form.reset());
   }
 
-  private editProduct() {
+  private edit() {
     this.loading = true;
-    this.productService
-      .editProduct(this.form.getRawValue())
+    this.editProduct
+      .execute(this.form.getRawValue())
       .pipe(finalize(() => (this.loading = false)))
       .subscribe();
+  }
+
+  private validateIdProduct(): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<ValidationErrors | null> => {
+      return this.validateIfExistProduct
+        .execute(control.value)
+        .pipe(map((existId) => (existId ? { uniqueId: true } : null)));
+    };
   }
 }
