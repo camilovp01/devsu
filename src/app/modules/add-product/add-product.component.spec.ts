@@ -1,7 +1,7 @@
 import {
   ComponentFixture,
-  TestBed,
   fakeAsync,
+  TestBed,
   tick,
 } from '@angular/core/testing';
 
@@ -11,7 +11,7 @@ import {
   ValidationErrors,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { Observable, map, of } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 import { Product } from '../../models/product.model';
 import { ProductService } from '../../services/product.service';
 import { AddProductComponent } from './add-product.component';
@@ -24,7 +24,7 @@ describe('AddProductComponent', () => {
 
   beforeEach(async () => {
     service = {
-      uniqueProductId() {
+      validateUniqueProductId() {
         return (
           control: AbstractControl
         ): Observable<ValidationErrors | null> => {
@@ -33,10 +33,10 @@ describe('AddProductComponent', () => {
           );
         };
       },
-      addProduct(body) {
+      addProduct() {
         return of(null);
       },
-      editProduct(body) {
+      editProduct() {
         return of(product);
       },
     };
@@ -82,7 +82,6 @@ describe('AddProductComponent', () => {
   });
 
   it('should set product on edit', () => {
-    component.id = product.id;
     component.product = product;
     component.ngOnInit();
     expect(component.form.getRawValue()).toEqual(product);
@@ -106,7 +105,6 @@ describe('AddProductComponent', () => {
     const createProductSpy = jest.spyOn(component as any, 'createProduct');
     const editProductSpy = jest.spyOn(component as any, 'editProduct');
     component.form.patchValue(product);
-    component.id = product.id;
     component.product = product;
     component.onSaveForm();
     expect(createProductSpy.mock.calls).toHaveLength(0);
@@ -117,7 +115,6 @@ describe('AddProductComponent', () => {
     const createProductSpy = jest.spyOn(component as any, 'createProduct');
     const editProductSpy = jest.spyOn(component as any, 'editProduct');
     component.form.patchValue(product);
-    component.id = '';
     component.onSaveForm();
     expect(createProductSpy.mock.calls).toHaveLength(1);
     expect(editProductSpy.mock.calls).toHaveLength(0);
