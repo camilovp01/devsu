@@ -1,0 +1,38 @@
+<div class="paginator">
+  <div>
+    <span
+      >Mostrando {{ currentStartIndex + 1 }} a {{ currentEndIndex }} de
+      {{ totalItems }} resultados</span
+    >
+  </div>
+  <div>
+    <button
+      class="button-primary"
+      (click)="prevPage()"
+      [disabled]="currentPage === 1"
+    >
+      Anterior
+    </button>
+    <span>Página {{ currentPage }} de {{ totalPages }}</span>
+    <button
+      class="button-primary"
+      (click)="nextPage()"
+      [disabled]="currentPage === totalPages"
+    >
+      Siguiente
+    </button>
+  </div>
+  <div>
+    <label for="itemsPerPageSelect">Mostrar</label>
+    <select id="itemsPerPageSelect" (change)="onItemsPerPageChange($event)">
+      <option
+        *ngFor="let option of itemsPerPageOptions"
+        [value]="option"
+        [selected]="itemsPerPage == option"
+      >
+        {{ option }}
+      </option>
+    </select>
+    <span>registros</span>
+  </div>
+</div>
