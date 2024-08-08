@@ -1,4 +1,4 @@
-<section class="product-list">
+<section class="product-list" (click)="showMenu = false">
   <div class="product-list__search-container">
     <input
       class="product-list__search-input product-list__search-input--rounded"
@@ -29,7 +29,10 @@
         </tr>
       </thead>
       <tbody class="product-list__table-body">
-        <tr class="product-list__table-row" *ngFor="let product of products">
+        <tr
+          class="product-list__table-row"
+          *ngFor="let product of paginatedProducts"
+        >
           <td class="product-list__table-data">
             <img
               class="product-list__product-logo"
@@ -47,15 +50,34 @@
           </td>
           <td class="product-list__table-data">
             <div class="product-list__actions">
-              <button
-                class="button-primary product-list__action-button product-list__action-button--delete"
-                (click)="removeProduct(product)"
-              >
-                Eliminar
-              </button>
-              <button class="button-primary" (click)="editProduct(product)">
-                Editar
-              </button>
+              <div class="menu-container">
+                <button
+                  class="menu-button"
+                  aria-label="Menu"
+                  (click)="toggleMenu(product, $event)"
+                >
+                  <span class="menu-button__dot"></span>
+                  <span class="menu-button__dot"></span>
+                  <span class="menu-button__dot"></span>
+                </button>
+                <div
+                  class="menu-options"
+                  *ngIf="selectedProduct === product && showMenu"
+                >
+                  <button
+                    class="menu-option menu-option--edit"
+                    (click)="editProduct(product)"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    class="menu-option menu-option--delete"
+                    (click)="removeProduct(product)"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </div>
             </div>
           </td>
         </tr>
@@ -68,5 +90,12 @@
         }
       </tbody>
     </table>
+    <app-paginator
+      [totalItems]="productsFiltered.length"
+      [itemsPerPage]="itemsPerPage"
+      (pageChange)="onPageChange($event)"
+      (itemsPerPageChange)="onItemsPerPageChange($event)"
+    >
+    </app-paginator>
   </div>
 </section>

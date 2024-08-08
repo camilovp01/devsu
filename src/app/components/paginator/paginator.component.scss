@@ -1,0 +1,29 @@
+.paginator {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  font-size: 0.8rem;
+}
+
+.paginator div {
+  display: flex;
+  align-items: center;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  margin: 0 0.5rem;
+}
+
+button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+select {
+  margin: 0 0.5rem;
+}
