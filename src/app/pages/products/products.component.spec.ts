@@ -2,27 +2,27 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
+import { GetProducts } from '@productModules/application/GetProducts';
+import { Product } from '@productModules/domain/models/product.model';
 import { of } from 'rxjs';
-import { Product } from '../../models/product.model';
-import { ProductService } from '../../services/product.service';
 import { ProductsComponent } from './products.component';
 
 describe('ProductsComponent', () => {
-  const product = { id: '4' };
+  const product = { id: '1' };
   let component: ProductsComponent;
   let fixture: ComponentFixture<ProductsComponent>;
-  let mockService: Partial<ProductService>;
+  let mockService: Partial<GetProducts>;
 
   beforeEach(async () => {
     mockService = {
-      getProducts() {
+      execute() {
         return of([]);
       },
     };
 
     await TestBed.configureTestingModule({
       imports: [ProductsComponent, RouterModule.forRoot([])],
-      providers: [{ provide: ProductService, useValue: mockService }],
+      providers: [{ provide: GetProducts, useValue: mockService }],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
@@ -35,17 +35,15 @@ describe('ProductsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize datasource', () => {
-    jest.spyOn(mockService, 'getProducts');
+  it('should initialize', () => {
+    jest.spyOn(mockService, 'execute');
     component.ngOnInit();
-    expect(mockService.getProducts).toHaveBeenCalledTimes(1);
+    expect(mockService.execute).toHaveBeenCalledTimes(1);
   });
 
   it('should go to edit page', () => {
     const router = TestBed.inject(Router);
-
     const navigateSpy = jest.spyOn(router, 'navigate');
-
     component.editProduct(product as Product);
     expect(navigateSpy).toHaveBeenCalledWith(['/edit', product.id], {
       state: { data: product },

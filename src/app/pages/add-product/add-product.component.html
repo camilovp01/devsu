@@ -1,0 +1,185 @@
+<section class="registration">
+  <div class="registration__container">
+    <div>
+      <button class="button-ghost" routerLink="/">&lt; Atrás</button>
+    </div>
+    <h1 class="registration__title">Formulario de Registro</h1>
+    <hr class="registration__divider" />
+    <form
+      class="registration__form"
+      [formGroup]="form"
+      (ngSubmit)="onSaveForm()"
+    >
+      <div class="registration__container-field">
+        <div class="registration__field">
+          <label class="registration__label" for="id">ID</label>
+          <input
+            class="registration__input registration__input--rounded"
+            type="text"
+            id="id"
+            formControlName="id"
+          />
+          @if (prodctId?.invalid && (prodctId?.dirty || prodctId?.touched)) {
+          <div class="registration__error">
+            @if (prodctId?.hasError('required')) {
+            <div class="registration__error-message">
+              Este campo es requerido!
+            </div>
+            } @if (prodctId?.hasError('minlength')) {
+            <div class="registration__error-message">
+              El id debe tener al menos 3 caracteres!
+            </div>
+            } @if (prodctId?.hasError('maxlength')) {
+            <div class="registration__error-message">
+              El id no debe ser mayor a 10 caracteres!
+            </div>
+            } @if (prodctId?.hasError('uniqueId')) {
+            <div class="registration__error-message">ID no válido!</div>
+            }
+          </div>
+          }
+        </div>
+
+        <div class="registration__field">
+          <label class="registration__label" for="name">Nombre</label>
+          <input
+            class="registration__input registration__input--rounded"
+            type="text"
+            id="name"
+            formControlName="name"
+          />
+          @if (name?.invalid && (name?.dirty || name?.touched)) {
+          <div class="registration__error">
+            @if (name?.hasError('required')) {
+            <div class="registration__error-message">
+              Este campo es requerido!
+            </div>
+            } @if (name?.hasError('minlength')) {
+            <div class="registration__error-message">
+              El nombre debe tener al menos 5 caracteres!
+            </div>
+            } @if (name?.hasError('maxlength')) {
+            <div class="registration__error-message">
+              El nombre no debe ser mayor a 100 caracteres!
+            </div>
+            }
+          </div>
+          }
+        </div>
+      </div>
+
+      <div class="registration__container-field">
+        <div class="registration__field">
+          <label class="registration__label" for="description"
+            >Descripción</label
+          >
+          <input
+            class="registration__input registration__input--rounded"
+            type="text"
+            id="description"
+            formControlName="description"
+          />
+          @if (description?.invalid && (description?.dirty ||
+          description?.touched)) {
+          <div class="registration__error">
+            @if (description?.hasError('required')) {
+            <div class="registration__error-message">
+              Este campo es requerido!
+            </div>
+            } @if (description?.hasError('minlength')) {
+            <div class="registration__error-message">
+              La descripción debe tener al menos 10 caracteres!
+            </div>
+            } @if (description?.hasError('maxlength')) {
+            <div class="registration__error-message">
+              La descripción no debe ser mayor a 200 caracteres!
+            </div>
+            }
+          </div>
+          }
+        </div>
+
+        <div class="registration__field">
+          <label class="registration__label" for="logo">Logo</label>
+          <input
+            class="registration__input registration__input--rounded"
+            type="url"
+            id="logo"
+            formControlName="logo"
+          />
+          @if (logo?.invalid && (logo?.dirty || logo?.touched)) {
+          <div class="registration__error">
+            @if (logo?.hasError('required')) {
+            <div class="registration__error-message">
+              Este campo es requerido!
+            </div>
+            }
+          </div>
+          }
+        </div>
+      </div>
+      <div class="registration__container-field">
+        <div class="registration__field">
+          <label class="registration__label" for="date_release"
+            >Fecha Liberación</label
+          >
+          <input
+            class="registration__input registration__input--rounded"
+            type="date"
+            id="date_release"
+            formControlName="date_release"
+          />
+          @if (dateRelease?.invalid && (dateRelease?.dirty ||
+          dateRelease?.touched)) {
+          <div class="registration__error">
+            @if (dateRelease?.hasError('required')) {
+            <div class="registration__error-message">
+              Este campo es requerido!
+            </div>
+            } @if (dateRelease?.hasError('currentDate')) {
+            <div class="registration__error-message">
+              La fecha debe ser igual o mayor a la fecha actual!
+            </div>
+            }
+          </div>
+          }
+        </div>
+
+        <div class="registration__field">
+          <label class="registration__label" for="date_revision"
+            >Fecha Revisión</label
+          >
+          <input
+            class="registration__input registration__input--rounded"
+            type="date"
+            id="date_revision"
+            formControlName="date_revision"
+          />
+        </div>
+      </div>
+      <div class="registration__actions">
+        <button
+          class="button-secondary registration__button"
+          type="reset"
+          title="Reiniciar"
+          [disabled]="!form.touched || loading"
+        >
+          Reiniciar
+        </button>
+        <button
+          class="button-primary registration__button"
+          type="submit"
+          title="Enviar"
+          [disabled]="form.invalid || loading"
+        >
+          @if (!loading) { Enviar } @else {
+          <div class="registration__loading">
+            Enviando...
+            <div class="registration__spinner"></div>
+          </div>
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</section>

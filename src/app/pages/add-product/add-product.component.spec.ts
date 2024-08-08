@@ -5,39 +5,39 @@ import {
   tick,
 } from '@angular/core/testing';
 
-import {
-  AbstractControl,
-  ReactiveFormsModule,
-  ValidationErrors,
-} from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { map, Observable, of } from 'rxjs';
-import { Product } from '../../models/product.model';
-import { ProductService } from '../../services/product.service';
+import { CreateProduct } from '@productModules/application/CreateProduct';
+import { EditProduct } from '@productModules/application/EditProduct';
+import { ValidateIfExistProduct } from '@productModules/application/ValidateIfExistProduct';
+import { Product } from '@productModules/domain/models/product.model';
+import { ProductResponse } from '@productModules/domain/models/productCreated.model';
+import { of } from 'rxjs';
 import { AddProductComponent } from './add-product.component';
 
 describe('AddProductComponent', () => {
   let component: AddProductComponent;
   let fixture: ComponentFixture<AddProductComponent>;
-  let service: Partial<ProductService>;
+  let createService: Partial<CreateProduct>;
+  let editService: Partial<EditProduct>;
+  let validateIfExistProductService: Partial<ValidateIfExistProduct>;
   let product: Product;
+  let productResponse: ProductResponse;
 
   beforeEach(async () => {
-    service = {
-      validateUniqueProductId() {
-        return (
-          control: AbstractControl
-        ): Observable<ValidationErrors | null> => {
-          return of('').pipe(
-            map((existId) => (existId ? { uniqueId: true } : null))
-          );
-        };
+    createService = {
+      execute() {
+        return of(productResponse);
       },
-      addProduct() {
-        return of(null);
+    };
+    editService = {
+      execute() {
+        return of(productResponse);
       },
-      editProduct() {
-        return of(product);
+    };
+    validateIfExistProductService = {
+      execute() {
+        return of(false);
       },
     };
 
@@ -49,6 +49,10 @@ describe('AddProductComponent', () => {
       description: 'Description Item 1',
       logo: (Math.random() * 100).toString(),
     };
+    productResponse = {
+      message: 'Product created successfully',
+      data: product,
+    };
 
     await TestBed.configureTestingModule({
       imports: [
@@ -56,7 +60,14 @@ describe('AddProductComponent', () => {
         RouterModule.forRoot([]),
         ReactiveFormsModule,
       ],
-      providers: [{ provide: ProductService, useValue: service }],
+      providers: [
+        { provide: CreateProduct, useValue: createService },
+        { provide: EditProduct, useValue: editService },
+        {
+          provide: ValidateIfExistProduct,
+          useValue: validateIfExistProductService,
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(AddProductComponent);
@@ -94,16 +105,16 @@ describe('AddProductComponent', () => {
   }));
 
   it('should not save if form is not valid', () => {
-    const createProductSpy = jest.spyOn(component as any, 'createProduct');
-    const editProductSpy = jest.spyOn(component as any, 'editProduct');
+    const createProductSpy = jest.spyOn(component as any, 'create');
+    const editProductSpy = jest.spyOn(component as any, 'edit');
     component.onSaveForm();
     expect(createProductSpy.mock.calls).toHaveLength(0);
     expect(editProductSpy.mock.calls).toHaveLength(0);
   });
 
   it('should edit product on save', () => {
-    const createProductSpy = jest.spyOn(component as any, 'createProduct');
-    const editProductSpy = jest.spyOn(component as any, 'editProduct');
+    const createProductSpy = jest.spyOn(component as any, 'create');
+    const editProductSpy = jest.spyOn(component as any, 'edit');
     component.form.patchValue(product);
     component.product = product;
     component.onSaveForm();
@@ -112,8 +123,8 @@ describe('AddProductComponent', () => {
   });
 
   it('should create product on save', () => {
-    const createProductSpy = jest.spyOn(component as any, 'createProduct');
-    const editProductSpy = jest.spyOn(component as any, 'editProduct');
+    const createProductSpy = jest.spyOn(component as any, 'create');
+    const editProductSpy = jest.spyOn(component as any, 'edit');
     component.form.patchValue(product);
     component.onSaveForm();
     expect(createProductSpy.mock.calls).toHaveLength(1);
