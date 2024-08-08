@@ -85,9 +85,6 @@ export class ProductsComponent implements OnInit {
   paginate(page: number) {
     const start = (page - 1) * this.itemsPerPage;
     const end = start + this.itemsPerPage;
-    console.log({ start, end });
-    console.log(this.productsFiltered.slice(start, end));
-
     this.paginatedProducts = this.productsFiltered.slice(start, end);
   }
 }
