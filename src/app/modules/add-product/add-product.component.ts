@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -21,7 +21,6 @@ import { currentDateValidator } from '../../validators/current-date.validator';
   styleUrl: './add-product.component.scss',
 })
 export class AddProductComponent implements OnInit {
-  @Input() id!: string;
   form!: FormGroup;
   loading: boolean = false;
   product!: Product;
@@ -31,14 +30,15 @@ export class AddProductComponent implements OnInit {
     private productService: ProductService,
     private router: Router
   ) {
-    const editProduct = this.router.getCurrentNavigation()?.extras?.state;
-    if (editProduct?.['data']) {
+    const productToEdit = this.router.getCurrentNavigation()?.extras?.state;
+
+    if (productToEdit?.['data']) {
       this.product = {
-        ...editProduct['data'],
-        date_release: new Date(editProduct['data'].date_release)
+        ...productToEdit['data'],
+        date_release: new Date(productToEdit['data'].date_release)
           .toISOString()
           .substring(0, 10),
-        date_revision: new Date(editProduct['data'].date_revision)
+        date_revision: new Date(productToEdit['data'].date_revision)
           .toISOString()
           .substring(0, 10),
       };
@@ -53,7 +53,7 @@ export class AddProductComponent implements OnInit {
           Validators.minLength(3),
           Validators.maxLength(10),
         ],
-        asyncValidators: [this.productService.uniqueProductId()],
+        asyncValidators: [this.productService.validateUniqueProductId()],
         updateOn: 'blur',
       }),
       name: new FormControl(null, [
@@ -77,7 +77,7 @@ export class AddProductComponent implements OnInit {
       ),
     });
 
-    if (this.id && this.product) {
+    if (this.product) {
       this.form.patchValue(this.product);
       this.prodctId?.disable();
     }
@@ -93,7 +93,7 @@ export class AddProductComponent implements OnInit {
       return;
     }
 
-    if (this.id && this.product) {
+    if (this.product) {
       this.editProduct();
     } else {
       this.createProduct();

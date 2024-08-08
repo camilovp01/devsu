@@ -42,7 +42,10 @@ export class ProductService {
   }
 
   editProduct(body: Product) {
-    return this.http.put<Product>(`${this.urlBase}bp/products`, body);
+    return this.http.put<Product>(
+      `${this.urlBase}bp/products/${body.id}`,
+      body
+    );
   }
 
   removeProduct(id: string) {
@@ -54,12 +57,12 @@ export class ProductService {
     });
   }
 
-  uniqueProductId(): AsyncValidatorFn {
+  validateUniqueProductId(): AsyncValidatorFn {
     return (control: AbstractControl): Observable<ValidationErrors | null> => {
-      let params = new HttpParams();
-      params = params.append('id', control.value);
       return this.http
-        .get<boolean>(`${this.urlBase}bp/products/verification`, { params })
+        .get<boolean>(
+          `${this.urlBase}bp/products/verification/${control.value}`
+        )
         .pipe(
           map((existId) => (existId ? { uniqueId: true } : null)),
           catchError(() => of(null))

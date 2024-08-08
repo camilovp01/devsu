@@ -4,7 +4,8 @@ import { ProductsComponent } from './modules/products/products.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'products', pathMatch: 'full' },
-  { path: 'add', component: AddProductComponent },
   { path: 'products', component: ProductsComponent },
+  { path: 'add', component: AddProductComponent },
+  { path: 'edit/:id', component: AddProductComponent },
   { path: '**', redirectTo: 'products' },
 ];
