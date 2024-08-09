@@ -19,23 +19,14 @@
             id="id"
             formControlName="id"
           />
-          @if (prodctId?.invalid && (prodctId?.dirty || prodctId?.touched)) {
+          @if (productId?.invalid && (productId?.dirty || productId?.touched)) {
           <div class="registration__error">
-            @if (prodctId?.hasError('required')) {
+            @for (errorMessage of messagesErrors; track errorMessage) {
+            @if(productId?.hasError(errorMessage.type)) {
             <div class="registration__error-message">
-              Este campo es requerido!
+              {{ errorMessage.message.replace(errorMessage.type, productId?.errors?.[errorMessage.type].requiredLength) }}
             </div>
-            } @if (prodctId?.hasError('minlength')) {
-            <div class="registration__error-message">
-              El id debe tener al menos 3 caracteres!
-            </div>
-            } @if (prodctId?.hasError('maxlength')) {
-            <div class="registration__error-message">
-              El id no debe ser mayor a 10 caracteres!
-            </div>
-            } @if (prodctId?.hasError('uniqueId')) {
-            <div class="registration__error-message">ID no válido!</div>
-            }
+            } }
           </div>
           }
         </div>
@@ -50,19 +41,12 @@
           />
           @if (name?.invalid && (name?.dirty || name?.touched)) {
           <div class="registration__error">
-            @if (name?.hasError('required')) {
+            @for (errorMessage of messagesErrors; track errorMessage) {
+            @if(name?.hasError(errorMessage.type)) {
             <div class="registration__error-message">
-              Este campo es requerido!
+              {{ errorMessage.message.replace(errorMessage.type, name?.errors?.[errorMessage.type].requiredLength) }}
             </div>
-            } @if (name?.hasError('minlength')) {
-            <div class="registration__error-message">
-              El nombre debe tener al menos 5 caracteres!
-            </div>
-            } @if (name?.hasError('maxlength')) {
-            <div class="registration__error-message">
-              El nombre no debe ser mayor a 100 caracteres!
-            </div>
-            }
+            } }
           </div>
           }
         </div>
@@ -82,19 +66,12 @@
           @if (description?.invalid && (description?.dirty ||
           description?.touched)) {
           <div class="registration__error">
-            @if (description?.hasError('required')) {
+            @for (errorMessage of messagesErrors; track errorMessage) {
+            @if(description?.hasError(errorMessage.type)) {
             <div class="registration__error-message">
-              Este campo es requerido!
+              {{ errorMessage.message.replace(errorMessage.type, description?.errors?.[errorMessage.type].requiredLength) }}
             </div>
-            } @if (description?.hasError('minlength')) {
-            <div class="registration__error-message">
-              La descripción debe tener al menos 10 caracteres!
-            </div>
-            } @if (description?.hasError('maxlength')) {
-            <div class="registration__error-message">
-              La descripción no debe ser mayor a 200 caracteres!
-            </div>
-            }
+            } }
           </div>
           }
         </div>
@@ -109,11 +86,12 @@
           />
           @if (logo?.invalid && (logo?.dirty || logo?.touched)) {
           <div class="registration__error">
-            @if (logo?.hasError('required')) {
+            @for (errorMessage of messagesErrors; track errorMessage) {
+            @if(logo?.hasError(errorMessage.type)) {
             <div class="registration__error-message">
-              Este campo es requerido!
+              {{ errorMessage.message.replace(errorMessage.type, logo?.errors?.[errorMessage.type].requiredLength) }}
             </div>
-            }
+            } }
           </div>
           }
         </div>
@@ -132,15 +110,12 @@
           @if (dateRelease?.invalid && (dateRelease?.dirty ||
           dateRelease?.touched)) {
           <div class="registration__error">
-            @if (dateRelease?.hasError('required')) {
+            @for (errorMessage of messagesErrors; track errorMessage) {
+            @if(dateRelease?.hasError(errorMessage.type)) {
             <div class="registration__error-message">
-              Este campo es requerido!
+              {{ errorMessage.message.replace(errorMessage.type, dateRelease?.errors?.[errorMessage.type].requiredLength) }}
             </div>
-            } @if (dateRelease?.hasError('currentDate')) {
-            <div class="registration__error-message">
-              La fecha debe ser igual o mayor a la fecha actual!
-            </div>
-            }
+            } }
           </div>
           }
         </div>
@@ -187,7 +162,7 @@
 <app-modal>
   <div>
     <h4 style="font-weight: 600; text-align: center">
-      {{ message }}
+      {{ messageConfirmCreateUpdate }}
     </h4>
     <div class="actions">
       <button

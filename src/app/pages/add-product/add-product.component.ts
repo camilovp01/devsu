@@ -12,6 +12,10 @@ import {
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { ModalComponent } from '@app/components/modal/modal.component';
+import {
+  FormValidationMessage,
+  messagesErrors,
+} from '@app/validators/form-messages.validator';
 import { CreateProduct } from '@productModules/application/CreateProduct';
 import { EditProduct } from '@productModules/application/EditProduct';
 import { ValidateIfExistProduct } from '@productModules/application/ValidateIfExistProduct';
@@ -31,7 +35,8 @@ export class AddProductComponent implements OnInit {
   loading: boolean = false;
   product!: Product;
   showMessage: boolean = false;
-  message: string = '';
+  messageConfirmCreateUpdate: string = '';
+  messagesErrors: FormValidationMessage[] = messagesErrors;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -89,7 +94,7 @@ export class AddProductComponent implements OnInit {
 
     if (this.product) {
       this.form.patchValue(this.product);
-      this.prodctId?.disable();
+      this.productId?.disable();
     }
 
     this.dateRelease?.valueChanges.subscribe((value) => {
@@ -109,7 +114,7 @@ export class AddProductComponent implements OnInit {
     }
   }
 
-  get prodctId() {
+  get productId() {
     return this.form.get('id');
   }
 
@@ -147,7 +152,7 @@ export class AddProductComponent implements OnInit {
       .pipe(finalize(() => (this.loading = false)))
       .subscribe(() => {
         this.showMessage = true;
-        this.message = '¡Producto creado exitósamente!';
+        this.messageConfirmCreateUpdate = '¡Producto creado exitósamente!';
         this.form.reset();
       });
   }
@@ -159,7 +164,7 @@ export class AddProductComponent implements OnInit {
       .pipe(finalize(() => (this.loading = false)))
       .subscribe(() => {
         this.showMessage = true;
-        this.message = '¡Producto editado exitósamente!';
+        this.messageConfirmCreateUpdate = '¡Producto editado exitósamente!';
       });
   }
 
