@@ -1,27 +1,93 @@
-# DevsuFront
+# Proyecto Angular 18 con Server Side Rendering (SSR)
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.1.3.
+Este proyecto es una aplicación Angular versión 18 que incluye funcionalidades de Server Side Rendering (SSR) para mejorar el rendimiento y la optimización en motores de búsqueda. Además, se ha implementado una arquitectura de puertos y adaptadores (también conocida como arquitectura hexagonal) para mejorar la mantenibilidad y escalabilidad del código.
 
-## Development server
+```bash
+project/
+├── dist/                   
+├── public/         # Public folder for assets
+│   │   ├── images/         
+├── src/                    
+│   ├── app/
+│   │   ├── components/     
+│   │   │   │   ├── header/
+│   │   │   │   ├── modal/ 
+│   │   │   │   ├── paginator/ 
+│   │   │   │   ├── tooltip/      
+│   │   ├── modules/     
+│   │   │   │   ├── products/
+│   │   │   │   │   │   ├── application/        # Usecases for application
+│   │   │   │   │   │   ├── domain/             # Models and ports 
+│   │   │   │   │   │   ├── infrastructure/     # Adapters and services
+│   │   ├── pages/     
+│   │   │   │   ├── add-product/
+│   │   │   │   ├── products/
+│   │   ├── validators/     # Validators for dates and form errors
+│   ├── environments/       # Environments variables           
+```
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## Requisitos previos
 
-## Code scaffolding
+Antes de instalar y ejecutar la aplicación, asegúrate de tener instalado:
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+- [Node.js](https://nodejs.org/) versión 20.x o superior
+- [npm](https://www.npmjs.com/) versión 10.x o superior
 
-## Build
+## Instalación
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+1. **Clona el repositorio:**
 
-## Running unit tests
+   ```bash
+   git clone https://github.com/camilovp01/devsu.git
+   ```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+2. **Navega al directorio del proyecto:**
 
-## Running end-to-end tests
+   ```bash
+   cd devsu
+   ```
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+3. **Instala las dependencias:**
 
-## Further help
+   ```bash
+   npm install
+   ```
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## Ejecución en desarrollo
+
+Para ejecutar la aplicación localmente en modo de desarrollo, usa el siguiente comando:
+
+```bash
+npm run start
+```
+
+Esto iniciará un servidor en modo de desarrollo con renderizado del lado del servidor. Puedes acceder a la aplicación en [http://localhost:4200](http://localhost:4200).
+
+## Construcción para producción
+
+Para construir la aplicación para producción, ejecuta:
+
+```bash
+npm run build
+```
+
+Esto generará los archivos necesarios para el SSR en la carpeta `dist`.
+
+Para iniciar el servidor de producción:
+
+```bash
+npm run serve:ssr:devsuFront
+```
+
+## Cobertura de Pruebas en Jest
+
+Para ejecutar las pruebas y generar un informe de cobertura, utiliza el siguiente comando:
+
+```bash
+npm run test:coverage
+```
+
+El informe de cobertura se generará en la carpeta `coverage` dentro del proyecto.
+
+![Cobertura de Pruebas](https://github.com/camilovp01/devsu/blob/main/public/images/coverage-report.png)
+
