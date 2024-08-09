@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   AbstractControl,
   AsyncValidatorFn,
@@ -20,7 +20,7 @@ import { CreateProduct } from '@productModules/application/CreateProduct';
 import { EditProduct } from '@productModules/application/EditProduct';
 import { ValidateIfExistProduct } from '@productModules/application/ValidateIfExistProduct';
 import { Product } from '@productModules/domain/models/product.model';
-import { finalize, map, Observable } from 'rxjs';
+import { finalize, map, Observable, Subject, takeUntil } from 'rxjs';
 import { currentDateValidator } from '../../validators/current-date.validator';
 
 @Component({
@@ -30,13 +30,14 @@ import { currentDateValidator } from '../../validators/current-date.validator';
   templateUrl: './add-product.component.html',
   styleUrl: './add-product.component.scss',
 })
-export class AddProductComponent implements OnInit {
+export class AddProductComponent implements OnInit, OnDestroy {
   form!: FormGroup;
   loading: boolean = false;
   product!: Product;
   showMessage: boolean = false;
   messageConfirmCreateUpdate: string = '';
   messagesErrors: FormValidationMessage[] = messagesErrors;
+  destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private formBuilder: FormBuilder,
@@ -61,45 +62,22 @@ export class AddProductComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.form = this.formBuilder.group({
-      id: new FormControl(null, {
-        validators: [
-          Validators.required,
-          Validators.minLength(3),
-          Validators.maxLength(10),
-        ],
-        asyncValidators: [this.validateIdProduct()],
-        updateOn: 'blur',
-      }),
-      name: new FormControl(null, [
-        Validators.required,
-        Validators.minLength(5),
-        Validators.maxLength(100),
-      ]),
-      description: new FormControl(null, [
-        Validators.required,
-        Validators.minLength(10),
-        Validators.maxLength(200),
-      ]),
-      logo: new FormControl(null, Validators.required),
-      date_release: new FormControl(null, [
-        Validators.required,
-        currentDateValidator(),
-      ]),
-      date_revision: new FormControl(
-        { value: null, disabled: true },
-        Validators.required
-      ),
-    });
-
+    this.initForm();
     if (this.product) {
       this.form.patchValue(this.product);
       this.productId?.disable();
     }
 
-    this.dateRelease?.valueChanges.subscribe((value) => {
-      this.dateRevision?.setValue(this.calculateNextYear(value));
-    });
+    this.dateRelease?.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((value) => {
+        this.dateRevision?.setValue(this.calculateNextYear(value));
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 
   onSaveForm() {
@@ -138,6 +116,39 @@ export class AddProductComponent implements OnInit {
     return this.form.get('date_revision');
   }
 
+  private initForm(): void {
+    this.form = this.formBuilder.group({
+      id: new FormControl(null, {
+        validators: [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(10),
+        ],
+        asyncValidators: [this.validateIdProduct()],
+        updateOn: 'blur',
+      }),
+      name: new FormControl(null, [
+        Validators.required,
+        Validators.minLength(5),
+        Validators.maxLength(100),
+      ]),
+      description: new FormControl(null, [
+        Validators.required,
+        Validators.minLength(10),
+        Validators.maxLength(200),
+      ]),
+      logo: new FormControl(null, Validators.required),
+      date_release: new FormControl(null, [
+        Validators.required,
+        currentDateValidator(),
+      ]),
+      date_revision: new FormControl(
+        { value: null, disabled: true },
+        Validators.required
+      ),
+    });
+  }
+
   private calculateNextYear(currentDate: string) {
     const initialDate = new Date(currentDate);
     const nextYear = new Date(currentDate);
@@ -149,7 +160,10 @@ export class AddProductComponent implements OnInit {
     this.loading = true;
     this.createProduct
       .execute(this.form.getRawValue())
-      .pipe(finalize(() => (this.loading = false)))
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => (this.loading = false))
+      )
       .subscribe(() => {
         this.showMessage = true;
         this.messageConfirmCreateUpdate = '¡Producto creado exitósamente!';
@@ -161,7 +175,10 @@ export class AddProductComponent implements OnInit {
     this.loading = true;
     this.editProduct
       .execute(this.form.getRawValue())
-      .pipe(finalize(() => (this.loading = false)))
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => (this.loading = false))
+      )
       .subscribe(() => {
         this.showMessage = true;
         this.messageConfirmCreateUpdate = '¡Producto editado exitósamente!';
@@ -170,9 +187,10 @@ export class AddProductComponent implements OnInit {
 
   private validateIdProduct(): AsyncValidatorFn {
     return (control: AbstractControl): Observable<ValidationErrors | null> => {
-      return this.validateIfExistProduct
-        .execute(control.value)
-        .pipe(map((existId) => (existId ? { uniqueId: true } : null)));
+      return this.validateIfExistProduct.execute(control.value).pipe(
+        takeUntil(this.destroy$),
+        map((existId) => (existId ? { uniqueId: true } : null))
+      );
     };
   }
 }
