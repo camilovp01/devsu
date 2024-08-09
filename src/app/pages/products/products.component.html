@@ -8,7 +8,7 @@
       [formControl]="search"
     />
     <button
-      class="button-primary"
+      class="button-primary product-list__add-button"
       type="button"
       title="Agregar"
       routerLink="/add"
@@ -22,10 +22,26 @@
         <tr class="product-list__table-row">
           <th class="product-list__table-header">Logo</th>
           <th class="product-list__table-header">Nombre del producto</th>
-          <th class="product-list__table-header">Descripción</th>
-          <th class="product-list__table-header">Fecha de liberación</th>
-          <th class="product-list__table-header">Fecha de reestructuración</th>
-          <th class="product-list__table-header">Acciones</th>
+          <th class="product-list__table-header">
+            Descripción
+            <app-tooltip
+              tooltipText="Puedes ver la descripción de cada producto."
+              ><img src="images/info.svg" alt="Info" width="24px" height="16px"
+            /></app-tooltip>
+          </th>
+          <th class="product-list__table-header">
+            Fecha de liberación<app-tooltip
+              tooltipText="Es la fecha en que se liberó el producto."
+              ><img src="images/info.svg" alt="Info" width="24px" height="16px"
+            /></app-tooltip>
+          </th>
+          <th class="product-list__table-header">
+            Fecha de reestructuración<app-tooltip
+              tooltipText="Fecha en que se reestructuró el producto."
+              ><img src="images/info.svg" alt="Info" width="24px" height="16px"
+            /></app-tooltip>
+          </th>
+          <th class="product-list__table-header">&nbsp;</th>
         </tr>
       </thead>
       <tbody class="product-list__table-body">
@@ -72,7 +88,7 @@
                   </button>
                   <button
                     class="menu-option menu-option--delete"
-                    (click)="removeProduct(product)"
+                    (click)="showConfirmRemove(product)"
                   >
                     Eliminar
                   </button>
@@ -99,3 +115,48 @@
     </app-paginator>
   </div>
 </section>
+@if (showModal) {
+<app-modal>
+  <div>
+    <h4 style="font-weight: 600; text-align: center">
+      ¿Estas seguro de eliminar el producto {{ selectedProduct.name }}?
+    </h4>
+    <div class="actions">
+      <button
+        class="button-secondary actions__button"
+        type="button"
+        title="Cancelar"
+        (click)="closeModal()"
+      >
+        Cancelar
+      </button>
+      <button
+        class="button-primary actions__button"
+        type="button"
+        title="Confirmar"
+        (click)="delete()"
+      >
+        Eliminar
+      </button>
+    </div>
+  </div>
+</app-modal>
+} @if (showRemoveMessage) {
+<app-modal>
+  <div>
+    <h4 style="font-weight: 600; text-align: center">
+      Producto eliminado exitósamente
+    </h4>
+    <div class="actions">
+      <button
+        class="button-primary actions__button"
+        type="button"
+        title="Confirmar"
+        (click)="showRemoveMessage = false"
+      >
+        Continuar
+      </button>
+    </div>
+  </div>
+</app-modal>
+}
