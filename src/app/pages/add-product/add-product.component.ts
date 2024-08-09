@@ -11,6 +11,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { ModalComponent } from '@app/components/modal/modal.component';
 import { CreateProduct } from '@productModules/application/CreateProduct';
 import { EditProduct } from '@productModules/application/EditProduct';
 import { ValidateIfExistProduct } from '@productModules/application/ValidateIfExistProduct';
@@ -21,7 +22,7 @@ import { currentDateValidator } from '../../validators/current-date.validator';
 @Component({
   selector: 'app-add-product',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, ModalComponent],
   templateUrl: './add-product.component.html',
   styleUrl: './add-product.component.scss',
 })
@@ -29,6 +30,8 @@ export class AddProductComponent implements OnInit {
   form!: FormGroup;
   loading: boolean = false;
   product!: Product;
+  showMessage: boolean = false;
+  message: string = '';
 
   constructor(
     private formBuilder: FormBuilder,
@@ -142,7 +145,11 @@ export class AddProductComponent implements OnInit {
     this.createProduct
       .execute(this.form.getRawValue())
       .pipe(finalize(() => (this.loading = false)))
-      .subscribe(() => this.form.reset());
+      .subscribe(() => {
+        this.showMessage = true;
+        this.message = '¡Producto creado exitósamente!';
+        this.form.reset();
+      });
   }
 
   private edit() {
@@ -150,7 +157,10 @@ export class AddProductComponent implements OnInit {
     this.editProduct
       .execute(this.form.getRawValue())
       .pipe(finalize(() => (this.loading = false)))
-      .subscribe();
+      .subscribe(() => {
+        this.showMessage = true;
+        this.message = '¡Producto editado exitósamente!';
+      });
   }
 
   private validateIdProduct(): AsyncValidatorFn {

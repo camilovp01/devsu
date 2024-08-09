@@ -1,6 +1,10 @@
 @import "../../../styles/mixins.scss";
 
 .product-list {
+  &__add-button {
+    padding: 12px 20px;
+  }
+
   &__search-container {
     display: flex;
     gap: 16px;
@@ -17,7 +21,7 @@
     border: 0.5px solid #dee2e6;
     padding: 12px 8px;
     &--rounded {
-      border-radius: 8px;
+      border-radius: var(--border-radius);
     }
   }
 
@@ -46,6 +50,10 @@
     text-align: left;
   }
 
+  &__table-data {
+    max-width: 200px;
+  }
+
   &__actions {
     display: flex;
     gap: 16px;
@@ -58,6 +66,11 @@
   &__product-logo {
     width: 50px;
   }
+}
+
+td:last-child,
+th:last-child {
+  width: 130px;
 }
 
 .menu-button {
@@ -123,4 +136,13 @@
 
 .menu-container.active .menu-options {
   display: flex;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 40px;
+  &__button {
+    padding: 14px 50px;
+  }
 }

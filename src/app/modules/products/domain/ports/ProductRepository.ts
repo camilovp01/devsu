@@ -6,6 +6,6 @@ export interface ProductRepository {
   create(product: Product): Observable<ProductResponse>;
   getProducts(): Observable<Product[]>;
   update(product: Product): Observable<ProductResponse>;
-  delete(id: string): void;
+  delete(product: Product): Observable<ProductResponse>;
   validateUniqueProductId(id: string): Observable<boolean>;
 }

@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '@environment/environment.development';
 import { Product } from '@productModules/domain/models/product.model';
@@ -29,13 +29,10 @@ export class ProductService implements ProductRepository {
     );
   }
 
-  delete(id: string) {
-    let params = new HttpParams();
-    params = params.append('id', id);
-    return this.http.delete(`${this.urlBase}bp/products`, {
-      params,
-      responseType: 'text',
-    });
+  delete(product: Product): Observable<ProductResponse> {
+    return this.http.delete<ProductResponse>(
+      `${this.urlBase}bp/products/${product.id}`
+    );
   }
 
   validateUniqueProductId(id: string): Observable<boolean> {

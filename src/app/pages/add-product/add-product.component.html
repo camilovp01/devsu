@@ -183,3 +183,22 @@
     </form>
   </div>
 </section>
+@if (showMessage) {
+<app-modal>
+  <div>
+    <h4 style="font-weight: 600; text-align: center">
+      {{ message }}
+    </h4>
+    <div class="actions">
+      <button
+        class="button-primary actions__button"
+        type="button"
+        title="Confirmar"
+        (click)="showMessage = false"
+      >
+        Continuar
+      </button>
+    </div>
+  </div>
+</app-modal>
+}
