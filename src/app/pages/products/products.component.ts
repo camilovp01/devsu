@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { ModalComponent } from '@app/components/modal/modal.component';
@@ -7,7 +7,7 @@ import { TooltipComponent } from '@app/components/tooltip/tooltip.component';
 import { DeleteProduct } from '@app/modules/products/application/DeleteProduct';
 import { GetProducts } from '@productModules/application/GetProducts';
 import { Product } from '@productModules/domain/models/product.model';
-import { debounceTime, finalize } from 'rxjs';
+import { debounceTime, finalize, Subject, takeUntil } from 'rxjs';
 import { PaginatorComponent } from '../../components/paginator/paginator.component';
 
 @Component({
@@ -24,7 +24,7 @@ import { PaginatorComponent } from '../../components/paginator/paginator.compone
     TooltipComponent,
   ],
 })
-export class ProductsComponent implements OnInit {
+export class ProductsComponent implements OnInit, OnDestroy {
   search = new FormControl('', { nonNullable: true });
   loading: boolean = false;
   products: Product[] = [];
@@ -35,6 +35,7 @@ export class ProductsComponent implements OnInit {
   currentPage = 1;
   showModal: boolean = false;
   showRemoveMessage: boolean = false;
+  destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private getProducts: GetProducts,
@@ -46,12 +47,20 @@ export class ProductsComponent implements OnInit {
     this.loading = true;
     this.getProducts
       .execute()
-      .pipe(finalize(() => (this.loading = false)))
+      .pipe(
+        finalize(() => (this.loading = false)),
+        takeUntil(this.destroy$)
+      )
       .subscribe((products) => {
         this.products = products;
         this.paginate(this.currentPage);
       });
     this.searchProduct();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 
   editProduct(product: Product): void {
@@ -90,33 +99,38 @@ export class ProductsComponent implements OnInit {
   }
 
   delete() {
-    this.deleteProduct.execute(this.selectedProduct).subscribe(() => {
-      this.products = this.products.filter(
-        (product) => product.id !== this.selectedProduct.id
-      );
-      this.selectedProduct = null;
-      this.showModal = false;
-      this.showRemoveMessage = true;
-      this.paginate(this.currentPage);
-    });
+    this.deleteProduct
+      .execute(this.selectedProduct)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.products = this.products.filter(
+          (product) => product.id !== this.selectedProduct.id
+        );
+        this.selectedProduct = null;
+        this.showModal = false;
+        this.showRemoveMessage = true;
+        this.paginate(this.currentPage);
+      });
   }
 
   private searchProduct(): void {
-    this.search.valueChanges.pipe(debounceTime(300)).subscribe((search) => {
-      if (!search) {
-        this.paginatedProducts = this.products;
-        this.paginate(this.currentPage);
-        return;
-      }
-      this.paginatedProducts = this.products.filter((product) => {
-        let matchesSearch = true;
-        const searchStr = search.toString().toLowerCase();
-        matchesSearch = Object.values(product).some((value) =>
-          value.toString().toLowerCase().includes(searchStr)
-        );
+    this.search.valueChanges
+      .pipe(debounceTime(300), takeUntil(this.destroy$))
+      .subscribe((search) => {
+        if (!search) {
+          this.paginatedProducts = this.products;
+          this.paginate(this.currentPage);
+          return;
+        }
+        this.paginatedProducts = this.products.filter((product) => {
+          let matchesSearch = true;
+          const searchStr = search.toString().toLowerCase();
+          matchesSearch = Object.values(product).some((value) =>
+            value.toString().toLowerCase().includes(searchStr)
+          );
 
-        return matchesSearch;
+          return matchesSearch;
+        });
       });
-    });
   }
 }

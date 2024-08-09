@@ -8,7 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "serve:ssr:devsuFront": "node dist/devsu-front/server/server.mjs",
     "test": "jest",
-    "test:watch": "jest --watchAll"
+    "test:watch": "jest --watchAll",
+    "test:coverage": "jest --coverage"
   },
   "jest": {
     "preset": "jest-preset-angular",
@@ -26,7 +27,8 @@
       }
     },
     "moduleNameMapper": {
-      "^@productModules/(.*)$": "<rootDir>/src/app/modules/products/$1"
+      "^@productModules/(.*)$": "<rootDir>/src/app/modules/products/$1",
+      "^@app/(.*)$": "<rootDir>/src/app/$1"
     }
   },
   "private": true,
